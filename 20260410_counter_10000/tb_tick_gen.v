@@ -26,7 +26,7 @@ module tb_tick_gen();
         rst = 0;
 
         //200msec delay
-        #200_000_000;  //2개정도볼려고 200미리
+        #200_000_000;  
         $stop;
 
     end

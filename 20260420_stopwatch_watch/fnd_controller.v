@@ -75,7 +75,7 @@ module fnd_controller #(
         .in0(w_blink_1),  // digit 1
         .in1(w_blink_10),  // digit 10
         .in2(w_blink_100),  // digit 1
-        .in3(w_blink_1000),
+        .in3(w_blink_1000), // digit 10
         .in4(4'hf),
         .in5(4'hf),
         .in6({3'b111, w_dot_onoff}),  // dpt display
@@ -125,7 +125,7 @@ module fnd_controller #(
 
 
     decoder_2x4 U_DECODER_2x4 (
-        .decoder_in(w_digit_sel[1:0]),  // 2비트만 가져와야해서
+        .decoder_in(w_digit_sel[1:0]),  
         .fnd_com(fnd_com)
     );
 
@@ -134,7 +134,7 @@ module fnd_controller #(
         .rst(rst),
         .btn_left(i_left),
         .btn_right(i_right),
-        .o_cursor_pos(w_cursor_pos) // 0~1 값 출력
+        .o_cursor_pos(w_cursor_pos) 
     );
 
     digit_blink_mux U_BLINK_MUX(
@@ -192,10 +192,10 @@ module clk_div_1khz (
     always @(posedge clk, posedge rst) begin
         if (rst) begin
             counter_reg <= 16'd0;
-            o_1khz_reg   <= 1'b0; // o_1khz 초기화해줌 바로 reg 형태로 바꾸는 것이 아니라
+            o_1khz_reg   <= 1'b0; 
         end else begin
-            counter_reg <= counter_reg + 1;  //6만 오천 오백까지 증가
-            if (counter_reg == 50000 - 1) begin  //50000-1
+            counter_reg <= counter_reg + 1;  
+            if (counter_reg == 50000 - 1) begin  
                 counter_reg <= 16'd0;
                 o_1khz_reg  <= ~o_1khz_reg;
             end
@@ -213,7 +213,7 @@ module counter_8 (  // counter_4에서 8로 수정
 
     assign digit_sel = counter_reg;  // 4가지 경우
 
-    always @(posedge clk, posedge rst) begin //clk 신호의 상승엣지가 발생할때마다 begin end 구현해라
+    always @(posedge clk, posedge rst) begin 
         if (rst) begin
             counter_reg <= 0;  // 0 초기화 <= 0
         end else begin

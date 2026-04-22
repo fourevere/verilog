@@ -15,7 +15,7 @@ module tb_4bit_full_adder ();
         .cin(1'b0),
         .s  (s),
         .c  (c)
-    );  //앞에서 이미 배열로 했으므로 굳이 여기서는 길게쓸필요가 없어서 줄이기 가능
+    );  
 
     initial begin
         i = 0;

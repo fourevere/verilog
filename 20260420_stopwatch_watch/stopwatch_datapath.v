@@ -130,7 +130,7 @@ module st_tick_counter #(
     assign time_counter = counter_reg;
 
 
-    always @(posedge clk, posedge rst) begin  //결국 여기서 counter_reg에 counter_next를 넣어서 출력함
+    always @(posedge clk, posedge rst) begin 
         if (rst) begin
             counter_reg <= 0;
         end else begin
@@ -138,8 +138,8 @@ module st_tick_counter #(
         end
     end
     //next counter CL : blocking(=)        
-    always @(*) begin                //여기서 counter_reg는 입력이므로 딱히 바뀌는 값이 아님. next를 하는 게 맞다.
-        counter_next = counter_reg;  //초기화
+    always @(*) begin             
+        counter_next = counter_reg;  
         o_tick = 1'b0;
         if (i_tick) begin
             //counter_reg:input, counter_next:output

@@ -1,6 +1,4 @@
 `timescale 1ns / 1ps
-
-//탑이면서 외부 인바이어먼트 모듈
 module tb_gates ();
 
     reg a_reg, b;

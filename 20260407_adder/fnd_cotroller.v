@@ -9,14 +9,11 @@ module fnd_cotroller (
 
 );
 
-    //assign fnd_com = 4'b1110;  //1개만 사용할거니까 이렇게 넣음
-
     wire [3:0]  w_o_mux, w_digit_1, w_digit_10, w_digit_100, w_digit_1000;
     wire [1:0]  w_digit_sel;
     wire        w_1khz;
 
 
-    //인스턴스라고 하시네
     digit_splitter U_DIGIT_SPLIT (
         .digit_in(fnd_in),
         .digit_1(w_digit_1),
@@ -59,11 +56,6 @@ module fnd_cotroller (
         .fnd_com(fnd_com)
     );
 
-
-
-
-//포트만 바꿔주고 2개만 바꾸래.  14비트. fnd_in
-
 endmodule
 
 
@@ -73,9 +65,9 @@ module clk_div_1khz (
     output  o_1khz
 );
 
-    reg [15:0] counter_reg; //모듈이 다르므로 중복 허용
+    reg [15:0] counter_reg;
 
-    reg o_1khz_reg;  //output reg 안하는 이유: 초기화해야되서, 하는방법도 있지만 이해를위해 했다심
+    reg o_1khz_reg;  
     assign o_1khz = o_1khz_reg;   
     
 
@@ -85,7 +77,7 @@ module clk_div_1khz (
             o_1khz_reg <= 1'b0;
         end else begin
             counter_reg <= counter_reg + 1;
-            if (counter_reg == (50_000 - 1)) begin //보기편할려고 숫자_ 붙임
+            if (counter_reg == (50_000 - 1)) begin 
                 counter_reg <= 16'd0;
                 o_1khz_reg <= ~o_1khz_reg;
             end
@@ -137,18 +129,16 @@ module mux_4x1 (
     output [3:0] o_mux
 );
     reg [3:0] o_reg;
-    assign o_mux = o_reg;//위에 output을 output reg로 바꾸거나 이렇게 하면 된다고함. 
-                         //이렇게하면 밑도 o_mux에서 o_reg로 바꿔야 함.
-
+    assign o_mux = o_reg;
     //mux, (*) all input: sensitivity list
-    always @(*) begin  /*i_in0, i_in1, i_in2, i_in3, i_sel*/
+    always @(*) begin  
         case (i_sel)
-            2'b00: o_reg = i_in0;  //출력 = 입력임 참고로 기억할것.
+            2'b00: o_reg = i_in0;  
             2'b01: o_reg = i_in1;
             2'b10: o_reg = i_in2;
             2'b11: o_reg = i_in3;
             default:
-            o_reg = 4'b0000;   //bxxxx로 처리하는 이유: 실수가 있으면 보기 쉽게할려고 하는듯.회사마다다름.
+            o_reg = 4'b0000;   
         endcase
     end
 
@@ -182,7 +172,7 @@ module decoder_2x4 (
             2'b01:   fnd_com = 4'b1101;
             2'b10:   fnd_com = 4'b1011;
             2'b11:   fnd_com = 4'b0111;
-            default: fnd_com = 4'b1111;  //모두 끄겠다는뜻
+            default: fnd_com = 4'b1111; 
         endcase
 
     end
@@ -203,11 +193,11 @@ module counter_4 (
     assign digit_sel = counter_reg;
 
 
-    always @(posedge clk, posedge rst) begin  //clk의 신호에 상승엣지가 발생할때마다 begin end 발동 or rst에 상승엣지~~
+    always @(posedge clk, posedge rst) begin 
         if (rst) begin
-            counter_reg <= 0;  //? 0으로 초기화라는데
+            counter_reg <= 0;  
         end else begin
-            counter_reg <= counter_reg + 1;   //발생할때마다 1증가하셈.
+            counter_reg <= counter_reg + 1;   
         end
     end
 

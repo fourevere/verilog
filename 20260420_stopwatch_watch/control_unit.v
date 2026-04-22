@@ -1,6 +1,5 @@
 `timescale 1ns / 1ps
 
-
 module stopwatch_control_unit (
     input            clk,
     input            rst,
@@ -19,14 +18,10 @@ module stopwatch_control_unit (
 
 );
 
-
     //state
     parameter [1:0] STOP = 0, RUN = 1, CLEAR = 2, MODE = 3;
     reg [1:0] c_state, n_state;
     reg mode_reg, mode_next;
-
-
-
 
     assign o_view_mode = sw[3];
 
@@ -42,7 +37,7 @@ module stopwatch_control_unit (
     end
     wire w_btnu_edge = btnu_d1 & ~btnu_d2;
 
-    assign o_mode = mode_reg;  //현재 화면 모드를 전달
+    assign o_mode = mode_reg;  
 
 
     assign o_led  = sw;
@@ -67,7 +62,6 @@ module stopwatch_control_unit (
         o_run_stop = 1'b0;
 
         o_save = w_btnu_edge;
-
 
         case (c_state)
             STOP: begin

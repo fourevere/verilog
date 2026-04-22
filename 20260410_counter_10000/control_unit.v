@@ -12,7 +12,6 @@ module control_unit(
     output  reg o_run_stop
 );
 
-
     //state
     parameter   [1:0] STOP = 0, RUN = 1, CLEAR = 2, MODE = 3;
     reg         [1:0] c_state, n_state;

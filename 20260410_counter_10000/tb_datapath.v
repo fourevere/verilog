@@ -15,8 +15,6 @@ module tb_datapath();
 
     always #5 clk = ~clk;
 
-
-
     initial begin
         clk = 0;
         rst = 1;
@@ -24,17 +22,9 @@ module tb_datapath();
         #20;
         rst = 0;
 
-        //////////////////////////////////////////////////////////
-
-
-
         #500_000_000;  //500msc delay
         $stop;
-
-        
     end
-
-
 
 
 endmodule

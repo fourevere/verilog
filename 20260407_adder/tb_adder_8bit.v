@@ -11,16 +11,12 @@ module tb_adder_8bit();
 
     integer i,j;
 
-
     adder_8bit but(
         .a(a),
         .b(b),
-        //.cin,   안만들어서 이건 없는거임.
         .s(s),
         .c(c)
     );
-
-
 
     initial begin
         i = 0;
@@ -34,7 +30,5 @@ module tb_adder_8bit();
         end
         $stop;
     end
-
-
 
 endmodule

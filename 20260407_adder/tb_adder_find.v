@@ -4,7 +4,6 @@
 
 module tb_adder_find();
 
-
     reg  [3:0] a, b;
     wire [3:0] fnd_com;
     wire [7:0] fnd_data;
@@ -19,8 +18,6 @@ module tb_adder_find();
         .fnd_data(fnd_data),
         .led(led) 
     );
-
-    //dp 0인경우는 볼필요 x
     
     initial begin
         i = 0;

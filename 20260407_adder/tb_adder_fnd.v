@@ -22,7 +22,7 @@ module tb_adder_fnd();
         .led(led)
     );
 
-    always #5 clk = ~clk; //5us 마다
+    always #5 clk = ~clk; 
 
 
     initial begin
@@ -32,10 +32,8 @@ module tb_adder_fnd();
         b = 8'd0;
 
         #20;
-        //reset
         rst = 0;
 
-        
         #4_000_000;
         a = 255;
         b = 1;
@@ -43,16 +41,11 @@ module tb_adder_fnd();
         #4_000_000;
         a = 1;
         b = 255;
-
-
-
         
         #4_000_000;
         a = 255;
         b = 255;
 
-
-        //expected S = 255, c= 0;
         #4_000_000;
         a = 0;
         b = 255;
@@ -61,31 +54,5 @@ module tb_adder_fnd();
         $stop;
 
     end
-
-
-
-/* 내가한것
-    initial begin
-        i = 0;
-        j = 0;
-        a = 0;
-        b = 0;
-        clk = 0;
-        rst = 1;
-        #20;
-        rst = 0;
-        
-        for (i = 0; i < 256; i = i + 1) begin
-            for (j = 0; j < 256; j = j + 1) begin
-                a = i;
-                b = j;
-                #10;
-            end
-        end
-        $stop;
-    end
-
-*/
-
 
 endmodule

@@ -2,10 +2,8 @@
 
 module tb_clk_div();
 
-
     reg clk, rst;
     wire o_1khz;
-
 
     //instance
     clk_div_1khz dut(
@@ -14,17 +12,7 @@ module tb_clk_div();
     .o_1khz(o_1khz)
 
 );
-
-
-    always #5 clk = ~clk; //5ns마다 반전. 100메가 
-
-
-    // initial begin
-    //     clk = 0;
-    //     rst = 0;
-    // end
-
-
+    always #5 clk = ~clk; 
 
     initial begin
         clk = 0;
@@ -33,7 +21,5 @@ module tb_clk_div();
         #20;
         rst = 0;
     end
-
-
 
 endmodule

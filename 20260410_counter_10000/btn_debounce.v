@@ -9,9 +9,8 @@ module btn_debounce(
 );
 
     //clock divider
-    //100MHz -> 100KHz   //주기 줄어들면 짧아진다.
+    //100MHz -> 100KHz  
     parameter F_COUNT = 1_000_000/100_000;
-    //bit모를때
     reg [$clog2(F_COUNT) - 1:0] r_counter;
     reg clk_100khz;
     always @(posedge clk, posedge rst) begin
@@ -46,13 +45,10 @@ module btn_debounce(
         
     always @(*) begin
         sync_next = {i_btn, sync_reg[7:1]}; 
-        //sync_next = {sync_reg[6:0], i_btn}; 위아래 아무거나 ok
     end
 
     //8input to 1output and gate
     assign debounce = &sync_reg;
-
-
 
     //rising edge detect
     always @(posedge clk, posedge rst) begin

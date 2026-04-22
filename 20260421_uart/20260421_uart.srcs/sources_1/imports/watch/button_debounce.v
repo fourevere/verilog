@@ -33,8 +33,6 @@ module button_debounce (
     reg  edge_reg;
     wire debounce;
 
-    //클럭디바이더 나중에 넣고 posedge clk에 반영하면 됨 바로밑에
-
     always @(posedge clk_100khz, posedge rst) begin
         if (rst) begin
             sync_reg <= 0;
@@ -45,7 +43,6 @@ module button_debounce (
 
     always @(*) begin
         sync_next = {i_btn, sync_reg[7:1]};
-        // sync_next = {sync_reg[6:0], i_btn};, 시프트 넣어도 됌
     end
 
     // 8input to 1output and gate
