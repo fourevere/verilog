@@ -129,7 +129,7 @@ module uart_rx (
             end
             STOP: begin
                 if (b_tick) begin
-                    if (b_tick_cnt_reg == 23) begin
+                    if ((b_tick_cnt_reg == 23) || ((b_tick_cnt_reg > 16) && !rx)) begin
                         rx_done_next = 1'b1;
                         n_state = IDLE;
                     end else begin
