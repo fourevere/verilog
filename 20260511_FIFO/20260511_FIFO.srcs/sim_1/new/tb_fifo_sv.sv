@@ -21,6 +21,10 @@ class transaction;
     bit            full;
     bit            empty;
 
+
+    // constraint push_only(
+    //     push = 1/100, 0/0;
+    // )
     //int            test_mode;
 
     function debug_print(string name);
@@ -67,6 +71,11 @@ class driver;
 
     task preset();
         fifo_vif.rst = 1;
+        fifo_vif.push_data = 0;
+        fifo_vif.push = 0;
+        fifo_vif.pop = 0;
+        fifo_vif.pop_data = 0;
+
         @(posedge fifo_vif.clk);
         @(posedge fifo_vif.clk);
         fifo_vif.rst = 0;
@@ -93,17 +102,29 @@ class driver;
         end
     endtask
 
-    // task run();
-    //     forever begin
-    //         gen2drv_mailbox.get(tr);
-    //         tr.debug_print("DRV");
-    //         @(posedge fifo_vif.clk);
-    //         #1;
-    //         fifo_vif.push_data = tr.push_data;
-    //         fifo_vif.push = tr.push;
-    //         fifo_vif.pop = tr.pop;
-    //     end
-    // endtask
+    task pop_only(int count);
+        $display("fifo pop only test");
+        repeat (count) begin
+            gen2drv_mailbox.get(tr);
+            @(posedge fifo_vif.clk);
+            #1;
+            fifo_vif.push = 0;
+            fifo_vif.pop = 1;  
+            ->event_gen_next;
+        end
+    endtask
+
+    task run();
+        forever begin
+            gen2drv_mailbox.get(tr);
+            //tr.debug_print("DRV");
+            @(posedge fifo_vif.clk);
+            #1;
+            fifo_vif.push_data = tr.push_data;
+            fifo_vif.push = tr.push;
+            fifo_vif.pop = tr.pop;
+        end
+    endtask
 endclass  //driver
 
 class monitor;
@@ -116,21 +137,21 @@ class monitor;
         this.fifo_vif = fifo_vif;
     endfunction  //new()
 
-    // task run();
-    //     forever begin
-    //         @(negedge fifo_vif.clk);
-    //         //            #1;
-    //         tr = new();
-    //         tr.push_data = fifo_vif.push_data;
-    //         tr.push = fifo_vif.push;
-    //         tr.pop = fifo_vif.pop;
-    //         tr.pop_data = fifo_vif.pop_data;
-    //         tr.full = fifo_vif.full;
-    //         tr.empty = fifo_vif.empty;
-    //         mon2scb_mailbox.put(tr);
-    //         tr.debug_print("MON");
-    //     end
-    // endtask
+    task run();
+        forever begin
+            @(negedge fifo_vif.clk);
+            //            #1;
+            tr = new();
+            tr.push_data = fifo_vif.push_data;
+            tr.push = fifo_vif.push;
+            tr.pop = fifo_vif.pop;
+            tr.pop_data = fifo_vif.pop_data;
+            tr.full = fifo_vif.full;
+            tr.empty = fifo_vif.empty;
+            mon2scb_mailbox.put(tr);
+            //tr.debug_print("MON");
+        end
+    endtask
 endclass
 
 class scoreboard;
@@ -139,72 +160,37 @@ class scoreboard;
     event event_gen_next;
     int total_cnt = 0, pass_cnt = 0, fail_cnt = 0;
     //byte mem[256];
-    // logic [7:0] fifo_que[$:15];
-    // logic [7:0] pop_que;
+    bit [7:0] fifo_que[$:16];
+    bit [7:0] compare_data;
 
     function new(mailbox#(transaction) mon2scb_mailbox, event event_gen_next);
         this.mon2scb_mailbox = mon2scb_mailbox;
         this.event_gen_next  = event_gen_next;
     endfunction  //new()
 
-    // task run();
-    //     forever begin
-    //         mon2scb_mailbox.get(tr);
-    //         tr.debug_print("SCB");
-    //         case ({
-    //             tr.push, tr.pop
-    //         })
-    //             2'b10: begin
-    //                 if (!tr.full) begin
-    //                     fifo_que.push_front(tr.push_data);
-    //                 end
-    //             end
-    //             2'b01: begin
-    //                 if (!tr.empty) begin
-    //                     pop_que = fifo_que.pop_back();
-    //                     if (pop_que == tr.pop_data) begin
-    //                         total_cnt++;
-    //                         pass_cnt++;
-    //                         $display("%t : PASS", $time);
-    //                     end else begin
-    //                         total_cnt++;
-    //                         fail_cnt++;
-    //                         $display("%t : FAIL", $time);
-    //                     end
-    //                 end
-    //             end
-    //             2'b11: begin
-    //                 if (tr.full) begin
-    //                     pop_que = fifo_que.pop_back();
-    //                     if (pop_que == tr.pop_data) begin
-    //                         total_cnt++;
-    //                         pass_cnt++;
-    //                         $display("%t : PASS", $time);
-    //                     end else begin
-    //                         total_cnt++;
-    //                         fail_cnt++;
-    //                         $display("%t : FAIL", $time);
-    //                     end
-    //                 end else if (tr.empty) begin
-    //                     fifo_que.push_front(tr.push_data);
-    //                 end else begin
-    //                     fifo_que.push_front(tr.push_data);
-    //                     pop_que = fifo_que.pop_back();
-    //                     if (pop_que == tr.pop_data) begin
-    //                         total_cnt++;
-    //                         pass_cnt++;
-    //                         $display("%t : PASS", $time);
-    //                     end else begin
-    //                         total_cnt++;
-    //                         fail_cnt++;
-    //                         $display("%t : FAIL", $time);
-    //                     end
-    //                 end
-    //             end
-    //         endcase
-    //         ->event_gen_next;
-    //     end
-    // endtask  //run
+    task run();
+        forever begin
+            mon2scb_mailbox.get(tr);
+            total_cnt++;
+            //tr.debug_print("SCB");
+            if (tr.push && (!tr.full)) begin
+                fifo_que.push_front(tr.push_data);
+            end
+            if (tr.pop && (!tr.empty)) begin
+                //pass fail decision
+                compare_data = fifo_que.pop_back();
+                if (compare_data == tr.pop_data) begin
+                    pass_cnt++;
+                    $display("%t : PASS", $time);
+                end else begin
+                    fail_cnt++;
+                    $display("%t : FAIL pop = %d, pop_data=%d, empty=%d",
+                             $time, tr.pop, tr.pop_data, tr.empty);
+                end
+            end
+            ->event_gen_next;
+        end
+    endtask  //run
 endclass  //scoreboard
 
 
@@ -243,27 +229,37 @@ class environment;
             drv.push_only(run_count);
         join
         $display("[ENV] push only test end");
-        #10;    //full인식못해서 주는 딜레이
+        #10;  //full인식못해서 주는 딜레이
         if (fifo_vif.full) $display("PASS : push only test");
         else $display("FAIL: push only test");
         #20;
-        $stop;
-        // fork
-        //     gen.run(10);
-        //     drv.run();
-        //     mon.run();
-        //     scb.run();
-        // join_any
-        // #10;
-        // $display("env run task end");
 
-        // $display("________________________");
-        // $display("**SRAM IP Verification**");
-        // $display("** total test num =%3d**", scb.total_cnt);
-        // $display("** Pass test num = %2d**", scb.pass_cnt);
-        // $display("** Fail test num = %2d**", scb.fail_cnt);
-        // $display("________________________");
-        // $stop;
+        fork
+            gen.run(run_count); 
+            drv.pop_only(run_count);
+        join 
+        
+        $display("[ENV] pop only test end");
+        #10;  
+        if (fifo_vif.empty) $display("PASS : empty only test");
+        else $display("FAIL: empty only test");
+        #20;
+
+        fork
+            gen.run(100);
+            drv.run();
+            mon.run();
+            scb.run();
+        join_any
+        #20;
+        $display("env run task end");
+        $display("________________________");
+        $display("**SRAM IP Verification**");
+        $display("** total test num =%3d**", scb.total_cnt);
+        $display("** Pass test num = %2d**", scb.pass_cnt);
+        $display("** Fail test num = %2d**", scb.fail_cnt);
+        $display("________________________");
+        $stop;
     endtask
 endclass  //environment
 
