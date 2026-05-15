@@ -1,0 +1,24 @@
+`timescale 1ns / 1ps
+
+module tb_dedicated_cpu ();
+
+    logic       clk;
+    logic       rst;
+    logic [7:0] out;
+    dedicated_cpu_0to10 dut (.*);
+
+
+    always #5 clk = ~clk;
+
+    initial begin
+        clk = 0;
+        rst = 1;
+        @(negedge clk);
+        @(negedge clk);
+        rst = 0;
+        #500;
+        $stop;
+    end
+
+
+endmodule
