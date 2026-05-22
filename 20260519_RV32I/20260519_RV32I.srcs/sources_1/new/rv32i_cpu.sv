@@ -5,17 +5,23 @@ module rv32i_cpu (
     input  logic        clk,
     input  logic        rst,
     input  logic [31:0] instr_code,
-    output logic [31:0] instr_addr
+    input  logic [31:0] drdata,
+    output logic [31:0] instr_addr,
+    output logic [ 2:0] mem_mode,
+    output logic        dwe,
+    output logic [31:0] daddr,
+    output logic [31:0] dwdata
 );
 
-    logic rf_we;
+    logic rf_we, branch, alusrc_sel;
     logic [3:0] alu_control;
-
-    rv32i_control_unit U_CONTROL_UNIT (
-        .instr_code(instr_code),
-        .*
-    );
-
+    logic [2:0] rfsrc_sel;
+    logic jal;
+    logic jalr;
+    
+    rv32i_control_unit U_CONTROL_UNIT (.*);
     rv32i_datapath U_DATA_PATH (.*);
 
 endmodule
+
+

@@ -18,6 +18,13 @@ module tb_rv32i ();
         rst = 0;
         @(negedge clk);
         @(negedge clk);
+        @(negedge clk);
+        @(negedge clk);
+        @(negedge clk);
+        @(negedge clk);
+        @(negedge clk);
+        @(negedge clk);
+        @(negedge clk);
         $stop;
     end
 
