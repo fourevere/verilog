@@ -1,0 +1,16 @@
+`timescale 1ns / 1ps
+
+module instraction_mem (  //instruction
+    input  logic [31:0] instr_addr,
+    output logic [31:0] instr_code
+);
+
+    logic [31:0] instr_rom[0:127];
+
+    initial begin
+
+       $readmemh("APB_BRAM.mem", instr_rom);
+    end
+
+    assign instr_code = instr_rom[instr_addr[31:2]];
+endmodule

@@ -1,0 +1,67 @@
+`timescale 1ns / 1ps
+
+module APB_bram (
+    input logic PCLK,
+    input  logic [31:0] PADDR,
+    input  logic [31:0] PWDATA,
+    input  logic        PENABLE,
+    input  logic        PWRITE,
+    input  logic        PSEL,
+    output logic        PREADY,
+
+    output logic [31:0] PRDATA
+);
+
+    logic [31:0] bram[0:63];
+
+    assign PREADY = (PENABLE & PSEL) ? 1'b1 : 1'b0;
+    assign PRDATA = bram[PADDR[31:2]];
+
+    always_ff @(posedge PCLK) begin
+        if (PREADY & PWRITE) begin
+            bram[PADDR[5:2]] <= PWDATA;
+        end
+    end
+
+
+endmodule
+
+    // apb_completer U_APB_RA (
+    //     .mem_mode(mem_mode),
+    //     .dwe(dwe),
+    //     .*
+    // );
+// module data_ram (
+//     input [31:0] PADDR,
+//     input [31:0] PWDATA,
+//     input [2:0] mem_mode,
+//     input dwe,
+//     output [31:0] PRDATA
+// );
+
+//     always_comb begin
+//         case (mem_mode)
+//             3'b000: begin
+//                 RDATA = PRDATA0;
+
+//             end
+//             3'b001: begin
+//                 RDATA = PRDATA1;
+
+//             end
+//             3'b010: begin
+//                 RDATA = PRDATA2;
+
+//             end
+//             3'b011: begin
+//                 RDATA = PRDATA3;
+
+//             end
+//             3'b100: begin
+//                 RDATA = PRDATA4;
+
+//             end
+//         endcase
+//     end
+
+// endmodule
